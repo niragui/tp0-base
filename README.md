@@ -142,4 +142,6 @@ Para poder correr este enunciado se debe primero ejecutar el codigo de python pa
 
 Comando para el codigo en python:
 
-'''python3 docker_creater.py'''
+```
+python3 docker_creater.py
+```
