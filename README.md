@@ -133,3 +133,13 @@ La Parte 2 requiere una sección donde se explique el protocolo de comunicación
 La Parte 3 requiere una sección que expliquen los mecanismos de sincronización utilizados.
 
 Finalmente, se pide a los alumnos leer atentamente y **tener en cuenta** los criterios de corrección provistos [en el campus](https://campusgrado.fi.uba.ar/mod/page/view.php?id=73393).
+
+
+#### Soluciones
+
+## Ejercicio 1(.1)
+Para poder correr este enunciado se debe primero ejecutar el codigo de python para configurar el dockerfile que luego se correra igual que siempre
+
+Comando para el codigo en python:
+
+'''python3 docker_creater.py'''
