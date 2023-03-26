@@ -37,6 +37,8 @@ def add_clients(amount, file):
         file.write("      - testing_net\n")
         file.write("    depends_on:\n")
         file.write("      - server\n")
+        file.write("    volumes:")
+        file.write("      - ./client/config.yaml:/config.yaml")
         file.write("\n"*2)
 
 
