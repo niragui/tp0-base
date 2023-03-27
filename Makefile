@@ -38,8 +38,9 @@ docker-compose-logs:
 	docker compose -f docker-compose-dev.yaml logs -f
 .PHONY: docker-compose-logs
 
-docker-compose-test:  
+docker-compose-test:
 	docker build -f ./server/Dockerfile -t "server:latest" .
-	docker build -f ./server/Dockerfile -t "server:latest" .
+	docker build -f ./servertest/Dockerfile -t "test:latest" .
+	docker compose -f docker-compose-dev.yaml up -d --build
 	make docker-compose-down
 .PHONY: docker-compose-test
