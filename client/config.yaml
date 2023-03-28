@@ -6,3 +6,13 @@ loop:
   period: "5s"
 log:
   level: "info"
+
+local:
+  id: "1"
+client:
+	name: "Nacho"
+	last: "Iragui"
+	document: "43037387"
+	birthdate: "2001-05-21"
+bet:
+	number: "12345"
