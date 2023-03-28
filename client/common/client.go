@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"fmt"
 	"net"
-	"time"
 
 	log "github.com/sirupsen/logrus"
 )
