@@ -1,5 +1,4 @@
 package main
-package common
 
 import (
 	"fmt"
@@ -11,7 +10,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 
-	//"github.com/7574-sistemas-distribuidos/docker-compose-init/client/common"
+	"github.com/niragui/tp0-base/blob/Ej-5/client/common"
 )
 
 // InitConfig Function that uses viper library to parse configuration parameters.
