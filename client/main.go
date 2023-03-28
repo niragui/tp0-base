@@ -1,4 +1,5 @@
 package main
+package common
 
 import (
 	"fmt"
@@ -12,16 +13,6 @@ import (
 
 	//"github.com/7574-sistemas-distribuidos/docker-compose-init/client/common"
 )
-
-type ClientConfig struct {
-	server        string
-	agency        string
-	name          string
-	last_name     string
-	document      string
-	birthdate     string
-	number        string
-}
 
 // InitConfig Function that uses viper library to parse configuration parameters.
 // Viper is configured to read variables from both environment variables and the
