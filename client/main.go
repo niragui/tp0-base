@@ -103,13 +103,13 @@ func main() {
 	PrintConfig(v)
 
 	clientConfig := common.ClientConfig{
-		server: v.BindEnv("server.address")
-		agency: v.BindEnv("local.id")
-		name: v.BindEnv("client.name")
-		last_name: v.BindEnv("client.last")
-		document: v.BindEnv("client.document")
-		birthdate: v.BindEnv("client.birthdate")
-		number: v.BindEnv("bet.number")
+		server: v.BindEnv("server.address"),
+		agency: v.BindEnv("local.id"),
+		name: v.BindEnv("client.name"),
+		last_name: v.BindEnv("client.last"),
+		document: v.BindEnv("client.document"),
+		birthdate: v.BindEnv("client.birthdate"),
+		number: v.BindEnv("bet.number"),
 	}
 
 	client := common.NewClient(clientConfig)
