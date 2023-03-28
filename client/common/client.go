@@ -108,7 +108,7 @@ func (c *Client) SendBet() {
 	// TODO: Modify the send to avoid short-write
 	fmt.Fprintf(
 		c.conn,
-		"Envio Apuesta"
+		"Envio Apuesta",
 	)
 	msg, err := bufio.NewReader(c.conn).ReadString('\n')
 	c.conn.Close()
@@ -127,7 +127,6 @@ func (c *Client) SendBet() {
 
 	// Wait a time between sending one message and the next one
 	time.Sleep(c.config.LoopPeriod)
-	}
 
 	log.Infof("action: loop_finished | result: success | client_id: %v", c.config.document)
 }
