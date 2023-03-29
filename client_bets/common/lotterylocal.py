@@ -19,7 +19,7 @@ class LotteryLocal():
             if not self.open:
                 break
             bet = client.get_bet()
-            bet_report = parse_bet(bet)
+            bet_report = parse_bet(bet, self.address)
             self.socket.sendall(bet_report.encode())
             self.socket.send(bet_report)
             dni = bet.get("DNI")
