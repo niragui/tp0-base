@@ -5,7 +5,7 @@ import logging
 import os
 import json
 import signal
-from client import Client
+from .client import Client
 from lotterylocal import LotteryLocal
 
 

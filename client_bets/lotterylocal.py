@@ -1,6 +1,6 @@
 import socket
 import logging
-import protocol
+from .protocol import parse_bet, get_reply
 
 
 class LotteryLocal():
@@ -19,12 +19,12 @@ class LotteryLocal():
             if not self.open:
                 break
             bet = client.get_bet()
-            bet_report = protocol.parse_bet(bet)
+            bet_report = parse_bet(bet)
             self.socket.sendall(bet_report.encode())
             self.socket.send(bet_report)
             dni = bet.get("DNI")
             apuesta = bet.get("Apuesta")
-            error = protocol.get_reply(self.socket)
+            error = get_reply(self.socket)
 
             if error is None:
                 log_text = "action: apuesta_enviada | result: success"
