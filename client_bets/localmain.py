@@ -68,18 +68,20 @@ def main():
 
     clients = []
 
+    documents = params.get("documents")
     names = params.get("names")
     last_names = params.get("last_names")
     birthdates = params.get("birthdates")
     numbers = params.get("numbers")
 
-    for i in range(len(names)):
+    for i in range(len(documents)):
+        document = documents[i]
         name = names[i]
         last_name = last_names[i]
         birthdate = birthdates[i]
         number = numbers[i]
 
-        client = Client(name, last_name, birthdate, number)
+        client = Client(document, name, last_name, birthdate, number)
         clients.append(client)
 
     local_id = params.get("adress")
