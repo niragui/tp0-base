@@ -28,9 +28,9 @@ def initialize_config():
 
     config_params = {}
     try:
-        config_params["ip"] = os.getenv('SERVER_ADDRESS', config["SERVER"]["IP"])
-        config_params["port"] = os.getenv('SERVER_ADDRESS', config["SERVER"]["PORT"])
-        config_params["adress"] = os.getenv('LOCAL_ADRESS', config["LOCAL"]["ADDRESS"])
+        config_params["ip"] = int(os.getenv('SERVER_ADDRESS', config["SERVER"]["IP"]))
+        config_params["port"] = int(os.getenv('SERVER_ADDRESS', config["SERVER"]["PORT"]))
+        config_params["adress"] = int(os.getenv('LOCAL_ADRESS', config["LOCAL"]["ADDRESS"]))
         config_params["documents"] = json.loads(os.getenv('CLIENTS_DOCUMENTS', config["CLIENTS"]["DOCUMENTS"]))
         config_params["names"] = json.loads(os.getenv('CLIENTS_NAMES', config["CLIENTS"]["NAMES"]))
         config_params["last_names"] = json.loads(os.getenv('CLIENTS_LAST_NAMES', config["CLIENTS"]["LAST_NAMES"]))
