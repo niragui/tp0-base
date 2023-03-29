@@ -29,7 +29,7 @@ def add_clients(amount, file):
         file.write(f"  client{i}:\n")
         file.write(f"    container_name: client{i}\n")
         file.write("    image: client:latest\n")
-        file.write("    entrypoint: python3 /main.py\n")
+        file.write("    entrypoint: python3 /localmain.py\n")
         file.write("    environment:\n")
         file.write(f"      - CLI_ID={i}\n")
         file.write("      - CLI_LOG_LEVEL=DEBUG\n")

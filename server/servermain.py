@@ -20,7 +20,7 @@ def initialize_config():
 
     config = ConfigParser(os.environ)
     # If config.ini does not exists original config object is not modified
-    config.read("config.ini")
+    config.read("serverconfig.ini")
 
     config_params = {}
     try:
