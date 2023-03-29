@@ -1,3 +1,5 @@
+from .protocol import Bet
+
 class Client():
     def __init__(self, document, name, last_name, birthdate, number) -> None:
         self.document = document
@@ -6,12 +8,7 @@ class Client():
         self.birthdate = birthdate
         self.number = number
 
-    def get_bet(self):
-        bet = {}
-        bet.update({"DNI": self.document})
-        bet.update({"Nombre": self.name})
-        bet.update({"Apellido": self.last_name})
-        bet.update({"Nacimiento": self.birthdate})
-        bet.update({"Apuesta": self.number})
+    def get_bet(self, local_address):
+        bet = Bet(local_address, self.name, self.last_name, self.document, self.birthdate, self.number)
 
         return bet

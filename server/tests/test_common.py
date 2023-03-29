@@ -1,4 +1,5 @@
 from common.utils import *
+from common.protocol import Bet
 import os
 import unittest
 

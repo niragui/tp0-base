@@ -1,6 +1,7 @@
 import socket
 import logging
-from .protocol import handle_bet_msg
+from .common.protocol import read_bet, reply_to_bet
+from .common.serverprotocol import handle_bet
 
 
 class Server:
@@ -20,8 +21,6 @@ class Server:
         finishes, servers starts to accept new connections again
         """
 
-        # TODO: Modify this program to handle signal to graceful shutdown
-        # the server
         while self.should_loop:
             client_sock = self.__accept_new_connection()
             self.__handle_client_connection(client_sock)
@@ -33,17 +32,13 @@ class Server:
         If a problem arises in the communication with the client, the
         client socket will also be closed
         """
+
         try:
-            # TODO: Modify the receive to avoid short-reads
-            msg = client_sock.recv(1024).rstrip().decode('utf-8')
-            addr = client_sock.getpeername()
-
-            handle_bet_msg(msg)
-
-
-            # TODO: Modify the send to avoid short-writes
-            client_sock.send("Ok".encode('utf-8'))
+            bet = read_bet(client_sock)
+            handle_bet(bet)
+            reply_to_bet(client_sock, None)
         except OSError as e:
+            reply_to_bet(client_sock, f"{e}")
             logging.error("action: receive_message | result: fail | error: {e}")
         finally:
             client_sock.close()
