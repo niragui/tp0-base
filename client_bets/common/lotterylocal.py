@@ -1,6 +1,6 @@
 import socket
 import logging
-from protocol import parse_bet, get_reply
+from .protocol import parse_bet, get_reply
 
 
 class LotteryLocal():
