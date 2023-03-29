@@ -1,6 +1,6 @@
 import socket
 import logging
-import json
+from .protocol import handle_bet_msg
 
 
 class Server:
@@ -37,11 +37,9 @@ class Server:
             # TODO: Modify the receive to avoid short-reads
             msg = client_sock.recv(1024).rstrip().decode('utf-8')
             addr = client_sock.getpeername()
-            bet = json.loads(msg)
 
-            dni = bet.get("DNI")
-            apuesta = bet.get("Apuesta")
-            logging.info(f"action: apuesta_almacenada | result: success | dni: {dni} | numero: {apuesta}")
+            handle_bet_msg(msg)
+
 
             # TODO: Modify the send to avoid short-writes
             client_sock.send("Ok".encode('utf-8'))
