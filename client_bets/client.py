@@ -1,4 +1,3 @@
-
 class client():
     def __init__(self, document, name, last_name, birthdate, number) -> None:
         self.document = document

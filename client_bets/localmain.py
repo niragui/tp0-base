@@ -6,7 +6,7 @@ import os
 import json
 import signal
 from .client import Client
-from lotterylocal import LotteryLocal
+from .lotterylocal import LotteryLocal
 
 
 def initialize_config():
