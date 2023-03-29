@@ -5,8 +5,8 @@ import logging
 import os
 import json
 import signal
-from .client import Client
 from .lotterylocal import LotteryLocal
+from .client import Client
 
 
 def initialize_config():
