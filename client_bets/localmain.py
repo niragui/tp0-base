@@ -89,7 +89,7 @@ def main():
     port = params.get("port")
 
     local = LotteryLocal(local_id, clients, ip, port)
-    signal.signal(signal.SIGINT, local.exit_gracefully)
+    signal.signal(signal.SIGINT, local.close_store)
 
     local.send_clients()
 
