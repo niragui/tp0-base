@@ -1,3 +1,3 @@
 FROM python:3.9.7-slim
-COPY server /
+COPY client_bets /
 ENTRYPOINT ["/bin/sh"]
