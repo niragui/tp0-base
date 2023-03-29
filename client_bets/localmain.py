@@ -36,7 +36,7 @@ def initialize_config():
         config_params["last_names"] = json.loads(os.getenv('CLIENTS_LAST_NAMES', config["CLIENTS"]["LAST_NAMES"]))
         config_params["birthdates"] = json.loads(os.getenv('BIRTHDATES', config["CLIENTS"]["BIRTHDATES"]))
         config_params["numbers"] = json.loads(os.getenv('NUMBERS', config["CLIENTS"]["NUMBERS"]))
-        config_params["logging"] = json.loads(os.getenv('LEVEL', config["LOGGING"]["LEVEL"]))
+        config_params["logging"] = os.getenv('LEVEL', config["LOGGING"]["LEVEL"])
     except KeyError as e:
         raise KeyError("Key was not found. Error: {} .Aborting server".format(e))
     except ValueError as e:
