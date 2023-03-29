@@ -7,13 +7,6 @@ default: build
 
 all:
 
-deps:
-	go mod tidy
-	go mod vendor
-
-build: deps
-	GOOS=linux go build -o bin/client github.com/7574-sistemas-distribuidos/docker-compose-init/client
-.PHONY: build
 
 docker-image:
 	docker build -f ./server/Dockerfile -t "server:latest" .
