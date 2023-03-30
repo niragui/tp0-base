@@ -1,7 +1,7 @@
 import socket
 import logging
-from .protocol import read_bet, reply_to_bet
-from .serverprotocol import handle_bet
+from .protocol import read_bets, reply_to_bet
+from .serverprotocol import handle_bets
 
 
 class Server:
@@ -34,12 +34,12 @@ class Server:
         """
 
         try:
-            bet = read_bet(client_sock)
-            handle_bet(bet)
+            bets = read_bets(client_sock)
+            handle_bets(bets)
             reply_to_bet(client_sock, None)
         except OSError as e:
             reply_to_bet(client_sock, f"{e}")
-            logging.error("action: receive_message | result: fail | error: {e}")
+            logging.error("action: apuestas_almacenadas | result: fail | error: {e}")
         finally:
             client_sock.close()
 

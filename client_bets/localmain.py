@@ -6,7 +6,7 @@ import os
 import json
 import signal
 from common.lotterylocal import LotteryLocal
-from common.client import Client
+from common.client import Client, read_clients_from_csv
 
 
 def initialize_config():
@@ -37,6 +37,8 @@ def initialize_config():
         config_params["birthdates"] = json.loads(os.getenv('BIRTHDATES', config["CLIENTS"]["BIRTHDATES"]))
         config_params["numbers"] = json.loads(os.getenv('NUMBERS', config["CLIENTS"]["NUMBERS"]))
         config_params["logging"] = os.getenv('LEVEL', config["LOGGING"]["LEVEL"])
+        config_params["files"] = json.loads(os.getenv('FILES', config["FILES"]["LOCATIONS"]))
+        config_params["mode"] = json.loads(os.getenv('MODE', config["MODE"]["MODE"]))
     except KeyError as e:
         raise KeyError("Key was not found. Error: {} .Aborting server".format(e))
     except ValueError as e:
@@ -59,13 +61,7 @@ def initialize_log(logging_level):
     )
 
 
-def main():
-    params = initialize_config()
-
-    logging_level = params["logging"]
-
-    initialize_log(logging_level)
-
+def get_local(params):
     clients = []
 
     documents = params.get("documents")
@@ -89,11 +85,43 @@ def main():
     port = params.get("port")
 
     local = LotteryLocal(local_id, clients, ip, port)
-    signal.signal(signal.SIGINT, local.close_store)
 
-    local.send_clients()
+    return local
 
-    local.close_store()
+
+def get_locals(params):
+    locals = []
+
+    files = params.get("files")
+    ip = params.get("ip")
+    port = params.get("port")
+
+    for i, file in enumerate(files):
+        clients = read_clients_from_csv(file)
+        local = LotteryLocal(i, clients, ip, port)
+        locals.append(local)
+
+    return locals
+
+
+def main():
+    params = initialize_config()
+
+    logging_level = params["logging"]
+    initialize_log(logging_level)
+
+    mode = params.get("mode")
+
+    if mode == "Multiple":
+        locals = get_locals(params)
+    else:
+        local = get_local(params)
+        locals = [local]
+
+    for local in locals:
+        signal.signal(signal.SIGINT, local.close_store)
+        local.send_clients()
+        local.close_store()
 
 
 if __name__ == "__main__":

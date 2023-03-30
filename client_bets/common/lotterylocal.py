@@ -1,6 +1,6 @@
 import socket
 import logging
-from .protocol import send_bet, read_reply_to_bet
+from .protocol import send_bets, read_reply_to_bet
 
 
 class LotteryLocal():
@@ -13,29 +13,30 @@ class LotteryLocal():
         self.open = True
 
     def send_clients(self):
+        bets = []
         for client in self.clients:
-            try:
-                if not self.open:
-                    break
-                self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                self.socket.connect((self.server, self.port))
-                bet = client.get_bet(self.address)
-                send_bet(self.socket, bet)
-                error = read_reply_to_bet(self.socket)
-                dni = bet.document
-                number = bet.number
-            except Exception as err:
-                error = str(err)
+            bet = client.get_bet(self.address)
+            bets.append(bet)
 
-            if error is None:
-                log_text = "action: apuesta_enviada | result: success"
-                log_text += f" | dni: {dni} | numero: {number}"
-            else:
-                log_text = "action: apuesta_enviada | result: fail"
-                log_text += f" | error: {error}"
+        if not self.open:
+            return
+        try:
+            self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.socket.connect((self.server, self.port))
+            send_bets(self.socket, bets)
+            error = read_reply_to_bet(self.socket)
+        except Exception as err:
+            error = str(err)
 
-            logging.info(log_text)
-            self.socket.close()
+        if error is None:
+            log_text = "action: apuestas_enviadas | result: success"
+            log_text += f" | amount: {len(bets)}"
+        else:
+            log_text = "action: apuestas_enviadas | result: fail"
+            log_text += f" | error: {error}"
+
+        logging.info(log_text)
+        self.socket.close()
 
     def close_store(self):
         self.socket.close()

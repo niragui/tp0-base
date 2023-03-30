@@ -59,6 +59,17 @@ def read_bet(socket_connected):
     return Bet(agency, first_name, last_name, document, birthdate, number)
 
 
+def read_bets(socket_connected):
+    amount = read_socket(socket_connected, LENGTH_LENGTH)
+
+    bets = []
+
+    for i in range(amount):
+        bet = read_bet(socket_connected)
+        bets.append(bet)
+
+    return bets
+
 def write_socket(socket_connected, bytes):
     sent = 0
 
@@ -84,6 +95,14 @@ def send_bet(socket_connected, bet):
 
     write_socket(socket_connected, int_to_bytes(length))
     write_socket(socket_connected, bet_text)
+
+
+def send_bets(socket_connected, bets):
+    amount = len(bets)
+
+    write_socket(socket_connected, int_to_bytes(amount))
+    for bet in bets:
+        send_bet(socket_connected, bet)
 
 
 def reply_to_bet(socket_connected, error):
