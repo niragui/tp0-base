@@ -60,7 +60,7 @@ def read_bet(socket_connected):
 
 
 def read_bets(socket_connected):
-    amount = read_socket(socket_connected, LENGTH_LENGTH)
+    amount = int_from_bytes(read_socket(socket_connected, LENGTH_LENGTH))
 
     bets = []
 
