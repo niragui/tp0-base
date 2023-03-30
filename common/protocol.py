@@ -146,7 +146,7 @@ def read_socket_server(socket_connected):
 
 
 def read_winners(socket_connected):
-    amount = read_socket(socket_connected, LENGTH_LENGTH)
+    amount = int_from_bytes(read_socket(socket_connected, LENGTH_LENGTH))
 
     winners = json.loads(read_socket(socket_connected, amount))
 
