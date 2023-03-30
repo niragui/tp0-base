@@ -8,4 +8,4 @@ def handle_bets(bets):
 
         logging.info(f"action: apuestas_almacenadas | result: success | amount: {len(bets)}")
     except Exception as err:
-        logging.info(f"action: apuesta_almacenada | result: fail | error: {err}")
+        logging.error(f"action: apuesta_almacenada | result: fail | error: {err}")

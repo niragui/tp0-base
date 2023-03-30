@@ -5,6 +5,8 @@ import datetime
 LENGTH_LENGTH = 4
 OK_BYTE = "O".encode("utf-8")
 ERROR_BYTE = "N".encode("utf-8")
+END_BYTE = "E".encode("utf-8")
+BETS_BYTE = "B".encode("utf-8")
 MAX_SIZE = 8000
 
 
@@ -100,6 +102,7 @@ def send_bet(socket_connected, bet):
 def send_bets(socket_connected, bets):
     amount = len(bets)
 
+    write_socket(socket_connected, BETS_BYTE)
     write_socket(socket_connected, int_to_bytes(amount))
     for bet in bets:
         send_bet(socket_connected, bet)
@@ -125,3 +128,37 @@ def read_reply_to_bet(socket_connected):
         length = int_from_bytes(read_socket(socket_connected, LENGTH_LENGTH))
         error = read_socket(socket_connected, length).decode("utf-8")
         return error
+
+
+def send_end(socket_connected):
+    write_socket(socket_connected, END_BYTE)
+
+
+def read_socket_server(socket_connected):
+    case = read_socket(socket_connected, 1)
+
+    if case == END_BYTE:
+        return None
+    elif case == BETS_BYTE:
+        return read_bets(socket_connected)
+    else:
+        raise Exception(f"Type Byte {case} Is Not Valid")
+
+
+def read_winners(socket_connected):
+    amount = read_socket(socket_connected, LENGTH_LENGTH)
+
+    winners = json.loads(read_socket(socket_connected, amount))
+
+    return winners
+
+
+def send_winners(socket_connected, winners):
+    winners_json = json.dumps(winners)
+
+    winners_bytes = winners_json.encode("utf-8")
+
+    length = len(winners_bytes)
+
+    write_socket(socket_connected, int_to_bytes(length))
+    write_socket(socket_connected, winners_bytes)

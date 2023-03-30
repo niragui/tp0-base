@@ -1,6 +1,6 @@
 import socket
 import logging
-from .protocol import send_bets, read_reply_to_bet
+from .protocol import send_bets, read_reply_to_bet, send_end, read_winners
 
 
 class LotteryLocal():
@@ -31,11 +31,17 @@ class LotteryLocal():
         if error is None:
             log_text = "action: apuestas_enviadas | result: success"
             log_text += f" | agency: {self.address} | amount: {len(bets)}"
+            logging.info(log_text)
+            send_end(self.socket)
+            winners = read_winners(self.socket)
+            log_text = "action: consulta_ganadores | result: success"
+            log_text += f" | cant_ganadores: {len(winners)}."
+            logging.info(log_text)
         else:
             log_text = "action: apuestas_enviadas | result: fail"
             log_text += f" | agency: {self.address} | error: {error}"
+            logging.error(log_text)
 
-        logging.info(log_text)
         self.socket.close()
 
     def close_store(self):

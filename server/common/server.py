@@ -1,16 +1,20 @@
 import socket
 import logging
-from .protocol import read_bets, reply_to_bet
+from .protocol import read_socket_server, reply_to_bet, send_winners
 from .serverprotocol import handle_bets
+from .utils import load_bets, has_won
 
 
 class Server:
-    def __init__(self, port, listen_backlog):
+    def __init__(self, port, listen_backlog, agencies_to_check):
         # Initialize server socket
         self._server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self._server_socket.bind(('', port))
         self._server_socket.listen(listen_backlog)
-        self.should_loop = True
+        self.agencies = {}
+        self.agencies_loaded = 0
+        self.agencies_waited = agencies_to_check
+        self.is_awake = True
 
     def run(self):
         """
@@ -21,9 +25,34 @@ class Server:
         finishes, servers starts to accept new connections again
         """
 
-        while self.should_loop:
+        while self.is_awake:
             client_sock = self.__accept_new_connection()
             self.__handle_client_connection(client_sock)
+            if self.agencies_loaded >= self.agencies_waited:
+                break
+
+        if not self.is_awake:
+            return
+
+        logging.info("action: sorteo | result: success")
+
+        bets = load_bets()
+        winners = {}
+        for bet in bets:
+            if has_won(bet):
+                agency = bet.agency
+                document = bet.document
+                before = winners.get(agency, [])
+                before.append(document)
+                winners.update({agency: before})
+
+        for agency, winners_agency in winners.items():
+            client_sock = self.agencies.get(agency, None)
+            if client_sock is None:
+                continue
+
+            send_winners(client_sock, winners_agency)
+            client_sock.close()
 
     def __handle_client_connection(self, client_sock):
         """
@@ -33,15 +62,21 @@ class Server:
         client socket will also be closed
         """
 
-        try:
-            bets = read_bets(client_sock)
-            handle_bets(bets)
-            reply_to_bet(client_sock, None)
-        except OSError as e:
-            reply_to_bet(client_sock, f"{e}")
-            logging.error("action: apuestas_almacenadas | result: fail | error: {e}")
-        finally:
-            client_sock.close()
+        bets = []
+        while bets is not None:
+            try:
+                bets = read_socket_server(client_sock)
+                if bets is None:
+                    self.agencies_loaded += 1
+                    break
+                agency = bets[0].agency
+                self.agencies.update({agency: client_sock})
+                handle_bets(bets)
+                reply_to_bet(client_sock, None)
+            except OSError as e:
+                reply_to_bet(client_sock, f"{e}")
+                logging.error("action: apuestas_almacenadas | result: fail | error: {e}")
+                break
 
     def __accept_new_connection(self):
         """
@@ -61,5 +96,5 @@ class Server:
         self.__del__()
 
     def __del__(self):
-        self.should_loop = False
+        self.is_awake = False
         self._server_socket.close()

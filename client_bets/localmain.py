@@ -98,7 +98,7 @@ def get_locals(params):
 
     for i, file in enumerate(files):
         clients = read_clients_from_csv(file)
-        local = LotteryLocal(i, clients, ip, port)
+        local = LotteryLocal(i+1, clients, ip, port)
         locals.append(local)
 
     return locals
