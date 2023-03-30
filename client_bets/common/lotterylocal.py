@@ -47,6 +47,9 @@ class LotteryLocal():
             log_text = "action: consulta_ganadores | result: success"
             log_text += f" | cant_ganadores: {len(winners)}."
             logging.info(log_text)
+            log_text = "action: consulta_ganadores | result: success"
+            log_text += f" | agency: {self.address}."
+            logging.debug(log_text)
             self.socket.close()
 
     def close_store(self):

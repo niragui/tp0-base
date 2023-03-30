@@ -46,13 +46,11 @@ class Server:
                 before.append(document)
                 winners.update({agency: before})
 
-        for agency, winners_agency in winners.items():
-            client_sock = self.agencies.get(agency, None)
-            if client_sock is None:
-                continue
-
+        for agency, client_sock in self.agencies.items():
+            winners_agency = winners.get(agency, [])
             send_winners(client_sock, winners_agency)
             client_sock.close()
+
 
     def __handle_client_connection(self, client_sock):
         """
