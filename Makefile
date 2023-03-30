@@ -39,7 +39,7 @@ docker-compose-logs:
 .PHONY: docker-compose-logs
 
 docker-compose-test:
-	docker build  -t test -f ./servertest.
+	docker build -t test ./servertest.
 	docker build -f ./server -t "server:latest".
 	docker compose -f docker-compose-dev.yaml up -d --build
 	docker run --rm --network tp0_testing_net test
