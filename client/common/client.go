@@ -56,7 +56,7 @@ func (c *Client) StartClientLoop() {
 	// autoincremental msgID to identify every message sent
 	msgID := 1
 	exit := make (chan os.Signal, 1)
-	signal.notify(exit, syscall.SIGTERM)
+	signal.Notify(exit, syscall.SIGTERM)
 
 loop:
 	// Send messages if the loopLapse threshold has not been surpassed
