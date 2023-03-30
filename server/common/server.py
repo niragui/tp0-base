@@ -1,6 +1,6 @@
 import socket
 import logging
-from threading import Thread
+from threading import Thread, Lock
 from .protocol import read_socket_server, reply_to_bet, send_winners
 from .serverprotocol import handle_bets
 from .utils import load_bets, has_won
@@ -15,6 +15,7 @@ class Server:
         self.agencies = {}
         self.agencies_connected = 0
         self.agencies_loaded = 0
+        self.lock = Lock()
         self.agencies_waited = agencies_to_check
         self.is_awake = True
 
@@ -80,7 +81,9 @@ class Server:
                     break
                 agency = bets[0].agency
                 self.agencies.update({agency: client_sock})
+                self.lock.acquire()
                 handle_bets(bets)
+                self.lock.release()
                 reply_to_bet(client_sock, None)
             except OSError as e:
                 reply_to_bet(client_sock, f"{e}")
