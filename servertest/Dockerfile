@@ -1,7 +1,7 @@
 FROM alpine
 
-COPY servertest/ /
+COPY servertest /
 
 RUN chmod +x test.sh
 
-CMD ["./test.sh"]
+ENTRYPOINT [ "./bin/sh"]
