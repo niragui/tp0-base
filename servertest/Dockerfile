@@ -1,6 +1,6 @@
 FROM alpine
 
-COPY servertest/test.sh test.sh
+COPY servertest/ /
 
 RUN chmod +x test.sh
 
