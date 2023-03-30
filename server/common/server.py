@@ -1,5 +1,6 @@
 import socket
 import logging
+from threading import Thread
 from .protocol import read_socket_server, reply_to_bet, send_winners
 from .serverprotocol import handle_bets
 from .utils import load_bets, has_won
@@ -12,6 +13,7 @@ class Server:
         self._server_socket.bind(('', port))
         self._server_socket.listen(listen_backlog)
         self.agencies = {}
+        self.agencies_connected = 0
         self.agencies_loaded = 0
         self.agencies_waited = agencies_to_check
         self.is_awake = True
@@ -25,14 +27,22 @@ class Server:
         finishes, servers starts to accept new connections again
         """
 
-        while self.is_awake:
+        threads = []
+
+        while self.is_awake and self.agencies_connected < self.agencies_waited:
             client_sock = self.__accept_new_connection()
-            self.__handle_client_connection(client_sock)
+            self.agencies_connected += 1
+            thread = Thread(target=self.__handle_client_connection, args=[client_sock])
+            threads.append(thread)
+            thread.run()
             if self.agencies_loaded >= self.agencies_waited:
                 break
 
         if not self.is_awake:
             return
+
+        for thread in threads:
+            thread.join()
 
         logging.info("action: sorteo | result: success")
 

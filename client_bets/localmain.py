@@ -5,6 +5,7 @@ import logging
 import os
 import json
 import signal
+from threading import Thread
 from common.lotterylocal import LotteryLocal
 from common.client import Client, read_clients_from_csv
 
@@ -118,9 +119,16 @@ def main():
         local = get_local(params)
         locals = [local]
 
+    threads = []
+
     for local in locals:
         signal.signal(signal.SIGINT, local.close_store)
-        local.send_clients()
+        thread = Thread(target=local.send_clients)
+        thread.run()
+        threads.append(thread)
+
+    for thread in threads:
+        thread.join()
 
     for local in locals:
         local.get_winners()
