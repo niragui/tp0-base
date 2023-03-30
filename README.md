@@ -27,4 +27,6 @@ Se implemento una clase de agencia que recive los datos del servidor y de todos 
 
 El protocolo consiste simplemente en enviar primero el tamaño del contenido a enviar y luego el conteido a enviar en formato json. 
 
-Para el servidor el cambio fue menor ya que no se debia incorporar ninguna nueva estructura como cliente o agencia. Simplemente se debia cambiar como se maneja el mensaje recivido que es seguir el protocolo ya establecido. Y una vez leidas las apuestas llamar a la funcion store_bet() para poder almacenarlas
+Para el servidor el cambio fue menor ya que no se debia incorporar ninguna nueva estructura como cliente o agencia. Simplemente se debia cambiar como se maneja el mensaje recivido que es seguir el protocolo ya establecido. Y una vez leidas las apuestas llamar a la funcion store_bet() para poder almacenarlas.
+
+El protocolo es explicado en desarrolo en el ejercicio 7 donde se explica con desarrollo cada parte.
