@@ -1,3 +1,7 @@
-FROM ubuntu:latest
-COPY ./servertest/test.sh /test.sh
-ENTRYPOINT ["/bin/sh"]
+FROM alpine
+
+COPY servertest/test.sh test.sh
+
+RUN chmod +x test.sh
+
+CMD ["./test.sh"]
