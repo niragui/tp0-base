@@ -11,6 +11,7 @@ class LotteryLocal():
         self.port = port_server
         self.socket = None
         self.open = True
+        self.bets_loaded = False
 
     def send_clients(self):
         bets = []
@@ -32,17 +33,21 @@ class LotteryLocal():
             log_text = "action: apuestas_enviadas | result: success"
             log_text += f" | agency: {self.address} | amount: {len(bets)}"
             logging.info(log_text)
+            self.bets_loaded = True
             send_end(self.socket)
-            winners = read_winners(self.socket)
-            log_text = "action: consulta_ganadores | result: success"
-            log_text += f" | cant_ganadores: {len(winners)}."
-            logging.info(log_text)
         else:
             log_text = "action: apuestas_enviadas | result: fail"
             log_text += f" | agency: {self.address} | error: {error}"
             logging.error(log_text)
+            self.socket.close()
 
-        self.socket.close()
+    def get_winners(self):
+        if self.bets_loaded:
+            winners = read_winners(self.socket)
+            log_text = "action: consulta_ganadores | result: success"
+            log_text += f" | cant_ganadores: {len(winners)}."
+            logging.info(log_text)
+            self.socket.close()
 
     def close_store(self):
         self.socket.close()

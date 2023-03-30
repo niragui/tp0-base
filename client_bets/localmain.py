@@ -121,6 +121,9 @@ def main():
     for local in locals:
         signal.signal(signal.SIGINT, local.close_store)
         local.send_clients()
+
+    for local in locals:
+        local.get_winners()
         local.close_store()
 
 
