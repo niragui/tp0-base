@@ -30,10 +30,10 @@ class LotteryLocal():
 
         if error is None:
             log_text = "action: apuestas_enviadas | result: success"
-            log_text += f" | amount: {len(bets)}"
+            log_text += f" | agency: {self.address} | amount: {len(bets)}"
         else:
             log_text = "action: apuestas_enviadas | result: fail"
-            log_text += f" | error: {error}"
+            log_text += f" | agency: {self.address} | error: {error}"
 
         logging.info(log_text)
         self.socket.close()
