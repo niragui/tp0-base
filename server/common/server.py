@@ -42,7 +42,8 @@ class Server:
             return
 
         for thread in threads:
-            thread.join()
+            if thread.is_alive():
+                thread.join()
 
         logging.info("action: sorteo | result: success")
 

@@ -128,7 +128,8 @@ def main():
         threads.append(thread)
 
     for thread in threads:
-        thread.join()
+        if thread.is_alive():
+            thread.join()
 
     for local in locals:
         local.get_winners()
