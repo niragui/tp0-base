@@ -3,8 +3,9 @@ import json
 import datetime
 
 LENGTH_LENGTH = 4
-OK_BYTE = "O"
-ERROR_BYTE = "N"
+OK_BYTE = "O".encode("utf-8")
+ERROR_BYTE = "N".encode("utf-8")
+MAX_SIZE = 8000
 
 
 class Bet:
@@ -62,7 +63,10 @@ def write_socket(socket_connected, bytes):
     sent = 0
 
     while sent < len(bytes):
-        aux = socket_connected.send(bytes[sent:])
+        end = len(bytes) - sent
+        if end - sent > MAX_SIZE:
+            end = sent + MAX_SIZE
+        aux = socket_connected.send(bytes[sent:end])
         sent += aux
 
     return aux
@@ -74,7 +78,7 @@ def send_bet(socket_connected, bet):
     for key, value in bet_dic.items():
         bet_dic.update({key: str(value)})
 
-    bet_text = json.dumps(bet_dic)
+    bet_text = json.dumps(bet_dic).encode("utf-8")
 
     length = len(bet_text)
 
@@ -87,17 +91,18 @@ def reply_to_bet(socket_connected, error):
         write_socket(socket_connected, OK_BYTE)
     else:
         write_socket(socket_connected, ERROR_BYTE)
+        error = error.encode("utf-8")
         length = len(error)
         write_socket(socket_connected, int_to_bytes(length))
         write_socket(socket_connected, error)
 
 
 def read_reply_to_bet(socket_connected):
-    status_byte = read_socket(socket_connected, 1).decode("utf-8")
+    status_byte = read_socket(socket_connected, 1)
 
     if status_byte == OK_BYTE:
         return None
     else:
         length = int_from_bytes(read_socket(socket_connected, LENGTH_LENGTH))
-        erorr = read_socket(socket_connected, length).decode("utf-8")
+        error = read_socket(socket_connected, length).decode("utf-8")
         return error

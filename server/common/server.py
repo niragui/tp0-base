@@ -1,7 +1,7 @@
 import socket
 import logging
-from .common.protocol import read_bet, reply_to_bet
-from .common.serverprotocol import handle_bet
+from .protocol import read_bet, reply_to_bet
+from .serverprotocol import handle_bet
 
 
 class Server:

@@ -1,6 +1,5 @@
 import socket
 import logging
-from .clientprotocol import parse_bet, get_reply
 from .protocol import send_bet, read_reply_to_bet
 
 
