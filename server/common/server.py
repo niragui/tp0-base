@@ -62,5 +62,7 @@ class Server:
         self.__del__()
 
     def __del__(self):
+        logging.info(f"action: closing | result: in_progress")
         self.should_loop = False
         self._server_socket.close()
+        logging.info(f"action: closing | result: success")
