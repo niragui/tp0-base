@@ -90,7 +90,6 @@ def send_end(socket_connected):
 
 def read_winners(socket_connected):
     amount = read_int(socket_connected)
-    logging.info(f"Winners To Read {amount}")
 
     winners = []
 
@@ -99,7 +98,6 @@ def read_winners(socket_connected):
         winner_dic = reader.read(socket_connected)
         winner = winner_dic.get(WINNER_ATTRIBUTE)
         winners.append(winner)
-        logging.info(f"Winners Read {winner}")
 
     return winners
 
@@ -156,8 +154,6 @@ def read_socket_server(socket_connected):
 def send_winner(socket_connected, winner):
     tlv_value = TLV(WINNER_BYTE, winner)
     parsed = tlv_value.to_bytes()
-    stringified = parsed.decode("utf-8")
-    logging.info(f"Winners: {stringified}")
 
     send_int(socket_connected, 1)
     write_socket(socket_connected, parsed)
