@@ -20,6 +20,9 @@ class TLV():
         length = len(value_b)
         bytes += int_to_bytes(length)
         bytes += value_b
+        if self.type == DATE_BYTE:
+            stringified = value_b.decode("latin-1")
+            logging.info(f"Largo {length} | Value: {self.value} | Bytes: {value_b} | Decoded: {stringified}")
 
         return bytes
 
