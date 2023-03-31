@@ -65,7 +65,7 @@ class Bet:
 
 
 def read_bet(socket_connected):
-    reader = TLVReader(BETS_BYTE)
+    reader = TLVReader(BET_TYPES)
     bet = reader.read(socket_connected)
 
     agency = bet.get(AGENCY_ATTRIBUTE)
