@@ -15,8 +15,6 @@ def read_socket(socket_connected, bytes):
     buffer = b""
     while len(buffer) < bytes:
         missing = bytes - len(buffer)
-        if missing > MAX_SIZE:
-            missing = MAX_SIZE
         aux = socket_connected.recv(missing)
         buffer += aux
 
