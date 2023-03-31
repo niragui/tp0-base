@@ -20,9 +20,6 @@ class TLV():
         length = len(value_b)
         bytes += int_to_bytes(length)
         bytes += value_b
-        if self.type == DATE_BYTE:
-            stringified = value_b.decode("latin-1")
-            logging.info(f"Largo {length} | Value: {self.value} | Bytes: {value_b} | Decoded: {stringified}")
 
         return bytes
 
@@ -49,10 +46,10 @@ class Bet:
     def get_tlv_values(self):
         tlv_values = []
         for attribute, type in ATTRIBUTES_BET.items():
-            if attribute != "birthdate":
-                value = getattr(self, attribute)
-            else:
-                value = self.birthdate.isoformat()
+            #if attribute != "birthdate":
+            value = getattr(self, attribute)
+            #else:
+            #   value = self.birthdate.isoformat()
             tlv_value = TLV(type, value)
             tlv_values.append(tlv_value)
         return tlv_values
