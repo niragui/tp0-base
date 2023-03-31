@@ -1,11 +1,30 @@
 import socket
 import json
 import datetime
+import logging
 
-LENGTH_LENGTH = 4
-OK_BYTE = "O".encode("utf-8")
-ERROR_BYTE = "N".encode("utf-8")
-MAX_SIZE = 8000
+from .socket import read_socket, write_socket, read_int, send_int, int_to_bytes
+from .tlv_reader import TLVReader
+from .constants import *
+
+
+class TLV():
+    def __init__(self, type, value):
+        self.type = type
+        self.value = str(value)
+
+    def to_bytes(self):
+        bytes = b""
+        bytes += self.type
+        value_b = self.value.encode("latin-1")
+        length = len(value_b)
+        bytes += int_to_bytes(length)
+        bytes += value_b
+        logging.debug(f"Type: {self.type}")
+        logging.debug(f"Length: {length}")
+        logging.debug(f"Value: {self.value}")
+
+        return bytes
 
 
 class Bet:
@@ -23,67 +42,44 @@ class Bet:
         self.birthdate = datetime.date.fromisoformat(birthdate)
         self.number = int(number)
 
+    def get_tlv_values(self):
+        tlv_values = []
+        for attribute, type in ATTRIBUTES_BET.items():
+            value = getattr(self, attribute)
+            tlv_value = TLV(type, value)
+            tlv_values.append(tlv_value)
+        return tlv_values
 
-def int_to_bytes(x: int, length: int = LENGTH_LENGTH) -> bytes:
-    return x.to_bytes(length, 'big')
-
- 
-def int_from_bytes(xbytes: bytes) -> int:
-    return int.from_bytes(xbytes, 'big')
-
-
-def read_socket(socket_connected, bytes):
-    buffer = b""
-    while len(buffer) < bytes:
-        missing = bytes - len(buffer)
-        aux = socket_connected.recv(missing)
-        buffer += aux
-
-    return aux
+    def parse_bet(self):
+        amount = len(vars(self))
+        values = self.get_tlv_values()
+        bytes = b""
 
 
-def read_bet(socket_connected):
-    length = int_from_bytes(read_socket(socket_connected, LENGTH_LENGTH))
+        bytes += int_to_bytes(amount)
 
-    bet = read_socket(socket_connected, length).decode('utf-8')
+        for value in values:
+            bytes += value.to_bytes()
 
-    bet = json.loads(bet)
+        return bytes
 
-    agency = bet.get("agency")
-    first_name = bet.get("first_name")
-    last_name = bet.get("last_name")
-    document = bet.get("document")
-    birthdate = bet.get("birthdate")
-    number = bet.get("number")
+
+def read_bet(socket_connected, reader):
+    bet = reader.read(socket_connected)
+
+    agency = bet.get(AGENCY_ATTRIBUTE)
+    first_name = bet.get(NAME_ATTRIBUTE)
+    last_name = bet.get(LAST_NAME_ATTRIBUTE)
+    document = bet.get(DOCUMENT_ATTRIBUTE)
+    birthdate = bet.get(DATE_ATTRIBUTE)
+    number = bet.get(NUMBER_ATTRIBUTE)
 
     return Bet(agency, first_name, last_name, document, birthdate, number)
 
 
-def write_socket(socket_connected, bytes):
-    sent = 0
-
-    while sent < len(bytes):
-        end = len(bytes) - sent
-        if end - sent > MAX_SIZE:
-            end = sent + MAX_SIZE
-        aux = socket_connected.send(bytes[sent:end])
-        sent += aux
-
-    return aux
-
-
 def send_bet(socket_connected, bet):
-    bet_dic = vars(bet)
-
-    for key, value in bet_dic.items():
-        bet_dic.update({key: str(value)})
-
-    bet_text = json.dumps(bet_dic).encode("utf-8")
-
-    length = len(bet_text)
-
-    write_socket(socket_connected, int_to_bytes(length))
-    write_socket(socket_connected, bet_text)
+    bytes = bet.parse_bet()
+    write_socket(socket_connected, bytes)
 
 
 def reply_to_bet(socket_connected, error):
@@ -91,9 +87,9 @@ def reply_to_bet(socket_connected, error):
         write_socket(socket_connected, OK_BYTE)
     else:
         write_socket(socket_connected, ERROR_BYTE)
-        error = error.encode("utf-8")
+        error = error.encode("latin-1")
         length = len(error)
-        write_socket(socket_connected, int_to_bytes(length))
+        send_int(socket_connected, length)
         write_socket(socket_connected, error)
 
 
@@ -103,6 +99,6 @@ def read_reply_to_bet(socket_connected):
     if status_byte == OK_BYTE:
         return None
     else:
-        length = int_from_bytes(read_socket(socket_connected, LENGTH_LENGTH))
-        error = read_socket(socket_connected, length).decode("utf-8")
+        length = read_int(socket_connected)
+        error = read_socket(socket_connected, length).decode("latin-1")
         return error
