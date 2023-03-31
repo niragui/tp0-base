@@ -13,11 +13,13 @@ class TLVReader():
 
         for i in range(amount):
             attr_type = read_socket(socket, 1)
-            logging.debug(f"Type: {attr_type}")
             length = read_int(socket)
-            logging.debug(f"Length: {length}")
             value = read_socket(socket, length).decode("latin-1")
-            logging.debug(f"Value: {value}")
+            if len(value) != length:
+                logging.debug(f"Type: {attr_type}")
+                logging.debug(f"Length: {length}")
+                logging.debug(f"Value: {value}")
+                raise Exception("Short Read Element")
             attribute = self.types.get(attr_type, None)
             if attribute is None:
                 raise Exception(f"{attr_type} Type Not A Valid Type")
