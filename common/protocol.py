@@ -49,7 +49,7 @@ class Bet:
 
     def parse_bet(self):
         amount = len(vars(self))
-        values = self.parse_bet()
+        values = self.get_tlv_values()
         bytes = b""
 
         logging.debug("Values Gotten")
