@@ -60,6 +60,48 @@ class Bet:
         return bytes
 
 
+def send_bet(socket_connected, bet):
+    bytes = bet.parse_bet()
+    write_socket(socket_connected, bytes)
+
+
+def send_bets(socket_connected, bets):
+    amount = len(bets)
+
+    write_socket(socket_connected, BETS_BYTE)
+    send_int(socket_connected, amount)
+    for bet in bets:
+        send_bet(socket_connected, bet)
+
+
+def read_reply_to_bet(socket_connected):
+    status_byte = read_socket(socket_connected, 1)
+
+    if status_byte == OK_BYTE:
+        return None
+    else:
+        length = read_int(socket_connected)
+        error = read_socket(socket_connected, length).decode("latin-1")
+        return error
+
+def send_end(socket_connected):
+    write_socket(socket_connected, END_BYTE)
+
+
+def read_winners(socket_connected):
+    amount = read_int(socket_connected)
+
+    winners = []
+
+    reader = TLVReader(WINNERS_TYPE)
+    for i in range(amount):
+        winner_dic = reader.read(socket_connected)
+        winner = winner_dic.get(WINNER_ATTRIBUTE)
+        winners.append(winner)
+
+    return winners
+
+
 def read_bet(socket_connected, reader):
     bet = reader.read(socket_connected)
 
@@ -87,20 +129,6 @@ def read_bets(socket_connected):
     return bets
 
 
-def send_bet(socket_connected, bet):
-    bytes = bet.parse_bet()
-    write_socket(socket_connected, bytes)
-
-
-def send_bets(socket_connected, bets):
-    amount = len(bets)
-
-    write_socket(socket_connected, BETS_BYTE)
-    send_int(socket_connected, amount)
-    for bet in bets:
-        send_bet(socket_connected, bet)
-
-
 def reply_to_bet(socket_connected, error):
     if error is None:
         write_socket(socket_connected, OK_BYTE)
@@ -112,21 +140,6 @@ def reply_to_bet(socket_connected, error):
         write_socket(socket_connected, error)
 
 
-def read_reply_to_bet(socket_connected):
-    status_byte = read_socket(socket_connected, 1)
-
-    if status_byte == OK_BYTE:
-        return None
-    else:
-        length = read_int(socket_connected)
-        error = read_socket(socket_connected, length).decode("latin-1")
-        return error
-
-
-def send_end(socket_connected):
-    write_socket(socket_connected, END_BYTE)
-
-
 def read_socket_server(socket_connected):
     case = read_socket(socket_connected, 1)
 
@@ -136,20 +149,6 @@ def read_socket_server(socket_connected):
         return read_bets(socket_connected)
     else:
         raise Exception(f"Type Byte {case} Is Not Valid")
-
-
-def read_winners(socket_connected):
-    amount = read_int(socket_connected)
-
-    winners = []
-
-    reader = TLVReader(WINNERS_TYPE)
-    for i in range(amount):
-        winner_dic = reader.read(socket_connected)
-        winner = winner_dic.get(WINNER_ATTRIBUTE)
-        winners.append(winner)
-
-    return winners
 
 
 def send_winner(socket_connected, winner):
