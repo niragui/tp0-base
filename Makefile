@@ -39,6 +39,7 @@ docker-compose-test:
 .PHONY: docker-compose-test
 
 docker-compose-test-bets:
-	docker-compose-up
-	docker-compose-test
-	docker-compose-down
+	make docker-compose-up
+	make docker-compose-test
+	make docker-compose-down
+.PHONY: docker-compose-test-bets
