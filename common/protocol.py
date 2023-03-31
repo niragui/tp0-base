@@ -10,7 +10,7 @@ from .constants import *
 class TLV():
     def __init__(self, type, value):
         self.type = type
-        self.value = value
+        self.value = str(value)
 
     def to_bytes(self):
         bytes = b""
