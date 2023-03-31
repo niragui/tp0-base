@@ -20,7 +20,7 @@ def read_socket(socket_connected, bytes):
         aux = socket_connected.recv(missing)
         buffer += aux
 
-    return aux
+    return buffer
 
 
 def write_socket(socket_connected, bytes):
@@ -33,7 +33,7 @@ def write_socket(socket_connected, bytes):
         aux = socket_connected.send(bytes[sent:end])
         sent += aux
 
-    return aux
+    return sent
 
 
 def read_int(socket_connected):
