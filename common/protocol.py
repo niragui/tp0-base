@@ -45,7 +45,7 @@ class Bet:
             value = getattr(self, attribute)
             tlv_value = TLV(type, value)
             tlv_values.append(tlv_value)
-        return tlv_value
+        return tlv_values
 
     def parse_bet(self):
         amount = len(vars(self))
