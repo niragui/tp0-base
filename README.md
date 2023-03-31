@@ -25,7 +25,7 @@ Se deberá implementar un módulo de comunicación entre el cliente y el servido
 
 Se implemento una clase de agencia que recive los datos del servidor y de todos los clientes adheridos. Una vez creado el objeto crea las apuestas a partir de todos casa cliente y luego procede a enviarlas mediante un protocolo compartido con el servidor.
 
-El protocolo consiste simplemente en enviar primero el tamaño del contenido a enviar y luego el conteido a enviar en formato json. 
+El protocolo consiste simplemente en enviar primero el tamaño del contenido a enviar y luego el conteido a enviar cada elemento de la apuesta en formato TLV. 
 
 Para el servidor el cambio fue menor ya que no se debia incorporar ninguna nueva estructura como cliente o agencia. Simplemente se debia cambiar como se maneja el mensaje recivido que es seguir el protocolo ya establecido. Y una vez leidas las apuestas llamar a la funcion store_bet() para poder almacenarlas.
 
