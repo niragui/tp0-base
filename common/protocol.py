@@ -32,12 +32,16 @@ class Bet:
         birthdate must be passed with format: 'YYYY-MM-DD'.
         number must be passed with integer format.
         """
-        self.agency = int(agency)
-        self.first_name = first_name
-        self.last_name = last_name
-        self.document = document
-        self.birthdate = datetime.date.fromisoformat(birthdate)
-        self.number = int(number)
+        try:
+            self.agency = int(agency)
+            self.first_name = first_name
+            self.last_name = last_name
+            self.document = document
+            self.birthdate = datetime.date.fromisoformat(birthdate)
+            self.number = int(number)
+        except:
+            error = f"agency: {agency}, first_name: {first_name}, last_name: {last_name}, document: {document}, birthdate: {birthdate}, number: {number}"
+            raise Exception(f"Error Parsing Bet Valued {error}")
 
     def get_tlv_values(self):
         tlv_values = []
