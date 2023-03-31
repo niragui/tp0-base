@@ -16,7 +16,7 @@ class TLV():
     def to_bytes(self):
         bytes = b""
         bytes += self.type
-        value_b = self.value.encode("utf-8")
+        value_b = self.value.encode("latin-1")
         length = len(value_b)
         bytes += int_to_bytes(length)
         bytes += value_b
@@ -110,7 +110,7 @@ def reply_to_bet(socket_connected, error):
         write_socket(socket_connected, OK_BYTE)
     else:
         write_socket(socket_connected, ERROR_BYTE)
-        error = error.encode("utf-8")
+        error = error.encode("latin-1")
         length = len(error)
         send_int(socket_connected, length)
         write_socket(socket_connected, error)
@@ -123,7 +123,7 @@ def read_reply_to_bet(socket_connected):
         return None
     else:
         length = read_int(socket_connected)
-        error = read_socket(socket_connected, length).decode("utf-8")
+        error = read_socket(socket_connected, length).decode("latin-1")
         return error
 
 
@@ -153,7 +153,7 @@ def read_winners(socket_connected):
 def send_winners(socket_connected, winners):
     winners_json = json.dumps(winners)
 
-    winners_bytes = winners_json.encode("utf-8")
+    winners_bytes = winners_json.encode("latin-1")
 
     length = len(winners_bytes)
 

@@ -16,7 +16,7 @@ class TLVReader():
             logging.debug(f"Type: {attr_type}")
             length = read_int(socket)
             logging.debug(f"Length: {length}")
-            value = read_socket(socket, length).decode("utf-8")
+            value = read_socket(socket, length).decode("latin-1")
             logging.debug(f"Value: {value}")
             attribute = self.types.get(attr_type, None)
             if attribute is None:
