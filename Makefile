@@ -37,3 +37,9 @@ docker-compose-test:
 	docker compose -f docker-compose-dev.yaml up -d --build
 	make docker-compose-down
 .PHONY: docker-compose-test
+
+docker-compose-try:
+	make docker-compose-up
+	make docker-compose-logs
+	make docker-compose-down
+.PHONY: docker-compose-try
