@@ -159,6 +159,7 @@ def send_winner(socket_connected, winner):
     stringified = parsed.decode("utf-8")
     logging.info(f"Winners: {stringified}")
 
+    send_int(socket_connected, 1)
     write_socket(socket_connected, parsed)
 
 
