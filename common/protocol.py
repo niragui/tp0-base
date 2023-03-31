@@ -46,7 +46,10 @@ class Bet:
     def get_tlv_values(self):
         tlv_values = []
         for attribute, type in ATTRIBUTES_BET.items():
-            value = getattr(self, attribute)
+            if attribute != "birthdate":
+                value = getattr(self, attribute)
+            else:
+                value = self.birthdate.isoformat()
             tlv_value = TLV(type, value)
             tlv_values.append(tlv_value)
         return tlv_values
