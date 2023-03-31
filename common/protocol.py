@@ -2,42 +2,9 @@ import socket
 import json
 import datetime
 
-from .socket import read_socket, write_socket
+from .socket import read_socket, write_socket, read_int, send_int, int_to_bytes
 from .tlv_reader import TLVReader
-
-LENGTH_LENGTH = 4
-OK_BYTE = "O".encode("utf-8")
-ERROR_BYTE = "E".encode("utf-8")
-END_BYTE = "F".encode("utf-8")
-BETS_BYTE = "B".encode("utf-8")
-
-BET_TYPES = {}
-
-AGENCY_BYTE = "A".encode("utf-8")
-AGENCY_ATTRIBUTE = "agency"
-BET_TYPES.update({AGENCY_BYTE: AGENCY_ATTRIBUTE})
-
-NAME_BYTE = "N".encode("utf-8")
-NAME_ATTRIBUTE = "first_name"
-BET_TYPES.update({NAME_BYTE: NAME_ATTRIBUTE})
-
-LAST_NAME_BYTE = "L".encode("utf-8")
-LAST_NAME_ATTRIBUTE = "last_name"
-BET_TYPES.update({LAST_NAME_BYTE: LAST_NAME_ATTRIBUTE})
-
-DOCUMENT_BYTE = "D".encode("utf-8")
-DOCUMENT_ATTRIBUTE = "document"
-BET_TYPES.update({DOCUMENT_BYTE: DOCUMENT_ATTRIBUTE})
-
-DATE_BYTE = "I".encode("utf-8")
-DATE_ATTRIBUTE = "birthdate"
-BET_TYPES.update({DATE_BYTE: DATE_ATTRIBUTE})
-
-NUMBER_BYTE = "U".encode("utf-8")
-NUMBER_ATTRIBUTE = "number"
-BET_TYPES.update({NUMBER_BYTE: NUMBER_ATTRIBUTE})
-
-ATTRIBUTES_BET = {v: k for k, v in BET_TYPES.items()}
+from .constants import *
 
 
 class TLV():
@@ -71,7 +38,7 @@ class Bet:
         self.birthdate = datetime.date.fromisoformat(birthdate)
         self.number = int(number)
 
-    def parse_bet(self):
+    def get_tlv_values(self):
         tlv_values = []
         for attribute, type in ATTRIBUTES_BET.items():
             value = getattr(self, attribute)
@@ -79,13 +46,18 @@ class Bet:
             tlv_values.append(tlv_value)
         return tlv_value
 
+    def parse_bet(self):
+        amount = len(vars(self))
 
-def int_to_bytes(x: int, length: int = LENGTH_LENGTH) -> bytes:
-    return x.to_bytes(length, 'big')
+        values = self.parse_bet()
+        bytes = b""
 
- 
-def int_from_bytes(xbytes: bytes) -> int:
-    return int.from_bytes(xbytes, 'big')
+        bytes += int_to_bytes(amount)
+
+        for value in values:
+            bytes += value.to_bytes()
+
+        return bytes
 
 
 def read_bet(socket_connected, reader):
@@ -102,7 +74,7 @@ def read_bet(socket_connected, reader):
 
 
 def read_bets(socket_connected):
-    amount = int_from_bytes(read_socket(socket_connected, LENGTH_LENGTH))
+    amount = read_int(socket_connected)
 
     reader = TLVReader(BET_TYPES)
 
@@ -116,15 +88,7 @@ def read_bets(socket_connected):
 
 
 def send_bet(socket_connected, bet):
-    amount = len(vars(bet))
-
-    values = bet.parse_bet()
-    bytes = b""
-
-    for value in values:
-        bytes += value.to_bytes()
-
-    write_socket(socket_connected, int_to_bytes(amount))
+    bytes = bet.parse_bet()
     write_socket(socket_connected, bytes)
 
 
@@ -132,7 +96,7 @@ def send_bets(socket_connected, bets):
     amount = len(bets)
 
     write_socket(socket_connected, BETS_BYTE)
-    write_socket(socket_connected, int_to_bytes(amount))
+    send_int(socket_connected, amount)
     for bet in bets:
         send_bet(socket_connected, bet)
 
@@ -144,7 +108,7 @@ def reply_to_bet(socket_connected, error):
         write_socket(socket_connected, ERROR_BYTE)
         error = error.encode("utf-8")
         length = len(error)
-        write_socket(socket_connected, int_to_bytes(length))
+        send_int(socket_connected, length)
         write_socket(socket_connected, error)
 
 
@@ -154,7 +118,7 @@ def read_reply_to_bet(socket_connected):
     if status_byte == OK_BYTE:
         return None
     else:
-        length = int_from_bytes(read_socket(socket_connected, LENGTH_LENGTH))
+        length = read_int(socket_connected)
         error = read_socket(socket_connected, length).decode("utf-8")
         return error
 
@@ -175,7 +139,7 @@ def read_socket_server(socket_connected):
 
 
 def read_winners(socket_connected):
-    amount = int_from_bytes(read_socket(socket_connected, LENGTH_LENGTH))
+    amount = read_int(socket_connected)
 
     winners = json.loads(read_socket(socket_connected, amount))
 
@@ -189,5 +153,5 @@ def send_winners(socket_connected, winners):
 
     length = len(winners_bytes)
 
-    write_socket(socket_connected, int_to_bytes(length))
+    send_int(socket_connected, length)
     write_socket(socket_connected, winners_bytes)

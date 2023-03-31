@@ -1,4 +1,14 @@
+from .constants import LENGTH_LENGTH
+
 MAX_SIZE = 8000
+
+
+def int_to_bytes(x: int, length: int = LENGTH_LENGTH) -> bytes:
+    return x.to_bytes(length, 'big')
+
+ 
+def int_from_bytes(xbytes: bytes) -> int:
+    return int.from_bytes(xbytes, 'big')
 
 
 def read_socket(socket_connected, bytes):
@@ -24,3 +34,13 @@ def write_socket(socket_connected, bytes):
         sent += aux
 
     return aux
+
+
+def read_int(socket_connected):
+    aux = read_socket(socket_connected, LENGTH_LENGTH)
+    return int_from_bytes(aux)
+
+
+def send_int(socket_connected, number):
+    value = int_from_bytes(number)
+    write_socket(socket_connected, value)

@@ -1,10 +1,5 @@
-from .protocol import LENGTH_LENGTH, int_from_bytes
-from .socket import read_socket
+from .socket import read_socket, read_int
 
-
-def read_int(socket):
-    aux = read_socket(socket, LENGTH_LENGTH)
-    return int_from_bytes(aux)
 
 
 class TLVReader():
