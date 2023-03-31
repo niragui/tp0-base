@@ -31,13 +31,13 @@ De esta manera el servidor simplemente lee el primer byte y en base a este sabe 
 
 ![Protocolo Cliente](https://github.com/niragui/tp0-base/blob/Ej-7/Protocolo%20Cliente.jpg)
 
-En el caso del servidor notamos como la dualidad se presenta a la hora de informar la recepcion de apuestas por lo que en ese caso tambien se incorpora un byte primero para entender como preseguir y a continuación el formato esperado. En este caso las opciones son informar recepción correcta o infroamr un error y explicar el error en dicho caso.
+En el caso del servidor notamos como la dualidad se presenta a la hora de informar la recepcion de apuestas por lo que en ese caso tambien se incorpora un byte primero para entender como preseguir y a continuación el formato esperado. En este caso las opciones son informar recepción correcta o informar un error y explicar el error en dicho caso.
 
 Por lo que el cliente leera el primer byte de encontrar el caso ok terminará la lectura y de encontrar un error procederá a leer el error.
 
 ![Protocolo Servidor](https://github.com/niragui/tp0-base/blob/Ej-7/Protocolo%20Servidor.jpg)
 
-Por ultimo quedaría explicar como se envian los ganadores y como se manejan los short-reads y short-write y en conjunto con el tope de tamaños. Para enviar a los ganadores nuavemente se ingresa primero el largo a leer y luego una lista en formato json. En este caso no se incorpora ningun byte de tipo ya que no hay lugar a confusion al momento de leer los ganadores. 
+Por ultimo quedaría explicar como se envian los ganadores y como se manejan los short-reads y short-write y en conjunto con el tope de tamaños. Para enviar a los ganadores nuavemente se ingresa primero la cantidad de ganadores a leer y luego todos los ganadores concatenados en formato TLV, quiza es un poco redundante ya que siempre son tipo document pero esto permite que ante un futuro en el cual se quiera compartir mas informacion como supongamos el premio pueda ser simplemente añadido. En este caso no se incorpora ningun byte de tipo en el inicio del mensaje ya que no hay lugar a confusion al momento de leer los ganadores. 
 
-Para solucionar el short-reads y short-write se implementaron 2 funciones auxiliares que corroboran cuanto realmente se leyó/escribío y prosiguen el proceso hasta que ese valor sea coherente con el esperado. En la función de escritura también se incorporó un tope para cuanto mander con el cual realizamos el tope de 8kB por paquete, en caso de ser más largo sera partido por el codigo mismo.
+Para solucionar los short-reads y short-writes se implementaron 2 funciones auxiliares que corroboran cuanto realmente se leyó/escribío y prosiguen el proceso hasta que ese valor sea coherente con el esperado. En la función de escritura también se incorporó un tope para cuanto mander con el cual realizamos el tope de 8kB por paquete, en caso de ser más largo sera partido por el codigo mismo.
 
