@@ -36,4 +36,10 @@ docker-compose-test:
 	docker build -f ./servertest/Dockerfile -t "test:latest" .
 	docker compose -f docker-compose-dev.yaml up -d --build
 	make docker-compose-down
-.PHONY: docker-compose-test
+.PHONY: docker-compose-
+
+docker-compose-try:
+	make docker-compose-up
+	make docker-compose-logs
+	make docker-compose-down
+.PHONY: docker-compose-try
