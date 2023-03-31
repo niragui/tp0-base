@@ -1,6 +1,7 @@
 import socket
 import json
 import datetime
+import logging
 
 from .socket import read_socket, write_socket, read_int, send_int, int_to_bytes
 from .tlv_reader import TLVReader
@@ -48,10 +49,10 @@ class Bet:
 
     def parse_bet(self):
         amount = len(vars(self))
-
         values = self.parse_bet()
         bytes = b""
 
+        logging.debug("Values Gotten")
         bytes += int_to_bytes(amount)
 
         for value in values:
@@ -89,6 +90,7 @@ def read_bets(socket_connected):
 
 def send_bet(socket_connected, bet):
     bytes = bet.parse_bet()
+    logging.debug("Bet Parsed")
     write_socket(socket_connected, bytes)
 
 
@@ -97,6 +99,7 @@ def send_bets(socket_connected, bets):
 
     write_socket(socket_connected, BETS_BYTE)
     send_int(socket_connected, amount)
+    logging.debug("Amount Sent")
     for bet in bets:
         send_bet(socket_connected, bet)
 
