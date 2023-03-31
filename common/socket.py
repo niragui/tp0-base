@@ -42,5 +42,5 @@ def read_int(socket_connected):
 
 
 def send_int(socket_connected, number):
-    value = int_from_bytes(number)
+    value = int_to_bytes(number)
     write_socket(socket_connected, value)
