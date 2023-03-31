@@ -2,12 +2,58 @@ import socket
 import json
 import datetime
 
+from .socket import read_socket, write_socket
+from .tlv_reader import TLVReader
+
 LENGTH_LENGTH = 4
 OK_BYTE = "O".encode("utf-8")
-ERROR_BYTE = "N".encode("utf-8")
-END_BYTE = "E".encode("utf-8")
+ERROR_BYTE = "E".encode("utf-8")
+END_BYTE = "F".encode("utf-8")
 BETS_BYTE = "B".encode("utf-8")
-MAX_SIZE = 8000
+
+BET_TYPES = {}
+
+AGENCY_BYTE = "A".encode("utf-8")
+AGENCY_ATTRIBUTE = "agency"
+BET_TYPES.update({AGENCY_BYTE: AGENCY_ATTRIBUTE})
+
+NAME_BYTE = "N".encode("utf-8")
+NAME_ATTRIBUTE = "first_name"
+BET_TYPES.update({NAME_BYTE: NAME_ATTRIBUTE})
+
+LAST_NAME_BYTE = "L".encode("utf-8")
+LAST_NAME_ATTRIBUTE = "last_name"
+BET_TYPES.update({LAST_NAME_BYTE: LAST_NAME_ATTRIBUTE})
+
+DOCUMENT_BYTE = "D".encode("utf-8")
+DOCUMENT_ATTRIBUTE = "document"
+BET_TYPES.update({DOCUMENT_BYTE: DOCUMENT_ATTRIBUTE})
+
+DATE_BYTE = "I".encode("utf-8")
+DATE_ATTRIBUTE = "birthdate"
+BET_TYPES.update({DATE_BYTE: DATE_ATTRIBUTE})
+
+NUMBER_BYTE = "U".encode("utf-8")
+NUMBER_ATTRIBUTE = "number"
+BET_TYPES.update({NUMBER_BYTE: NUMBER_ATTRIBUTE})
+
+ATTRIBUTES_BET = {v: k for k, v in BET_TYPES.items()}
+
+
+class TLV():
+    def __init__(self, type, value):
+        self.type = type
+        self.value = value
+
+    def to_bytes(self):
+        bytes = b""
+        bytes += self.type
+        value_b = self.value.encode("utf-8")
+        length = len(value_b)
+        bytes += int_to_bytes(length)
+        bytes += value_b
+
+        return bytes
 
 
 class Bet:
@@ -25,6 +71,14 @@ class Bet:
         self.birthdate = datetime.date.fromisoformat(birthdate)
         self.number = int(number)
 
+    def parse_bet(self):
+        tlv_values = []
+        for attribute, type in ATTRIBUTES_BET.items():
+            value = getattr(self, attribute)
+            tlv_value = TLV(type, value)
+            tlv_values.append(tlv_value)
+        return tlv_value
+
 
 def int_to_bytes(x: int, length: int = LENGTH_LENGTH) -> bytes:
     return x.to_bytes(length, 'big')
@@ -34,29 +88,15 @@ def int_from_bytes(xbytes: bytes) -> int:
     return int.from_bytes(xbytes, 'big')
 
 
-def read_socket(socket_connected, bytes):
-    buffer = b""
-    while len(buffer) < bytes:
-        missing = bytes - len(buffer)
-        aux = socket_connected.recv(missing)
-        buffer += aux
+def read_bet(socket_connected, reader):
+    bet = reader.read(socket_connected)
 
-    return aux
-
-
-def read_bet(socket_connected):
-    length = int_from_bytes(read_socket(socket_connected, LENGTH_LENGTH))
-
-    bet = read_socket(socket_connected, length).decode('utf-8')
-
-    bet = json.loads(bet)
-
-    agency = bet.get("agency")
-    first_name = bet.get("first_name")
-    last_name = bet.get("last_name")
-    document = bet.get("document")
-    birthdate = bet.get("birthdate")
-    number = bet.get("number")
+    agency = bet.get(AGENCY_ATTRIBUTE)
+    first_name = bet.get(NAME_ATTRIBUTE)
+    last_name = bet.get(LAST_NAME_ATTRIBUTE)
+    document = bet.get(DOCUMENT_ATTRIBUTE)
+    birthdate = bet.get(DATE_ATTRIBUTE)
+    number = bet.get(NUMBER_ATTRIBUTE)
 
     return Bet(agency, first_name, last_name, document, birthdate, number)
 
@@ -64,39 +104,28 @@ def read_bet(socket_connected):
 def read_bets(socket_connected):
     amount = int_from_bytes(read_socket(socket_connected, LENGTH_LENGTH))
 
+    reader = TLVReader(BET_TYPES)
+
     bets = []
 
     for i in range(amount):
-        bet = read_bet(socket_connected)
+        bet = read_bet(socket_connected, reader)
         bets.append(bet)
 
     return bets
 
-def write_socket(socket_connected, bytes):
-    sent = 0
-
-    while sent < len(bytes):
-        end = len(bytes) - sent
-        if end - sent > MAX_SIZE:
-            end = sent + MAX_SIZE
-        aux = socket_connected.send(bytes[sent:end])
-        sent += aux
-
-    return aux
-
 
 def send_bet(socket_connected, bet):
-    bet_dic = vars(bet)
+    amount = len(vars(bet))
 
-    for key, value in bet_dic.items():
-        bet_dic.update({key: str(value)})
+    values = bet.parse_bet()
+    bytes = b""
 
-    bet_text = json.dumps(bet_dic).encode("utf-8")
+    for value in values:
+        bytes += value.to_bytes()
 
-    length = len(bet_text)
-
-    write_socket(socket_connected, int_to_bytes(length))
-    write_socket(socket_connected, bet_text)
+    write_socket(socket_connected, int_to_bytes(amount))
+    write_socket(socket_connected, bytes)
 
 
 def send_bets(socket_connected, bets):
