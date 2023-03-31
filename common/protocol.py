@@ -20,9 +20,6 @@ class TLV():
         length = len(value_b)
         bytes += int_to_bytes(length)
         bytes += value_b
-        logging.debug(f"Type: {self.type}")
-        logging.debug(f"Length: {length}")
-        logging.debug(f"Value: {self.value}")
 
         return bytes
 

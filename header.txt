@@ -7,7 +7,6 @@ services:
     entrypoint: python3 /servermain.py
     environment:
       - PYTHONUNBUFFERED=1
-      - LOGGING_LEVEL=INFO
     networks:
       - testing_net
     volumes:

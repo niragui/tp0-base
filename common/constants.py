@@ -1,8 +1,6 @@
 LENGTH_LENGTH = 4
 OK_BYTE = "O".encode("latin-1")
 ERROR_BYTE = "E".encode("latin-1")
-END_BYTE = "F".encode("latin-1")
-BETS_BYTE = "B".encode("latin-1")
 
 BET_TYPES = {}
 
