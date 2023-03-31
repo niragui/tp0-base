@@ -52,7 +52,7 @@ class Bet:
         values = self.get_tlv_values()
         bytes = b""
 
-        logging.debug("Values Gotten")
+
         bytes += int_to_bytes(amount)
 
         for value in values:
@@ -90,7 +90,6 @@ def read_bets(socket_connected):
 
 def send_bet(socket_connected, bet):
     bytes = bet.parse_bet()
-    logging.debug("Bet Parsed")
     write_socket(socket_connected, bytes)
 
 
@@ -99,7 +98,6 @@ def send_bets(socket_connected, bets):
 
     write_socket(socket_connected, BETS_BYTE)
     send_int(socket_connected, amount)
-    logging.debug("Amount Sent")
     for bet in bets:
         send_bet(socket_connected, bet)
 

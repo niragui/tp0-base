@@ -15,7 +15,7 @@ class TLVReader():
             attr_type = read_socket(socket, 1)
             length = read_int(socket)
             value = read_socket(socket, length)
-            attribute = self.attr_type.get(attr_type, None)
+            attribute = self.types.get(attr_type, None)
             if attribute is None:
                 raise Exception(f"{attr_type} Type Not A Valid Type")
             values_read.update({attribute: value})
